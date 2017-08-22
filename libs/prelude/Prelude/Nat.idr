@@ -581,6 +581,14 @@ multOneRightNeutral (S left) =
     rewrite inductiveHypothesis in
             Refl
 
+total multTwoPlusSame : (n : Nat) -> n * 2 = n + n
+multTwoPlusSame Z = Refl
+multTwoPlusSame (S k) =
+  let inductiveHypothesis = multTwoPlusSame k in
+    rewrite inductiveHypothesis in
+    rewrite sym (plusSuccRightSucc k k) in
+            cong {f=S} Refl
+
 -- Minus
 total minusSuccSucc : (left : Nat) -> (right : Nat) ->
   minus (S left) (S right) = minus left right
