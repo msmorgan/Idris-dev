@@ -13,8 +13,12 @@ import Prelude.List
 %default total
 
 ||| An infinite stream
-data Stream : Type -> Type where
-  (::) : (value : elem) -> Inf (Stream elem) -> Stream elem
+corecord Stream (elem : Type) where
+  constructor (::)
+  ||| The first element
+  head : elem
+  ||| All but the first element
+  tail : Stream elem
 
 -- Hints for interactive editing
 %name Stream xs,ys,zs,ws
@@ -23,15 +27,7 @@ data Stream : Type -> Type where
 %used Stream.(::) value
 
 Functor Stream where
-    map f (x::xs) = f x :: map f xs
-
-||| The first element of an infinite stream
-head : Stream a -> a
-head (x::xs) = x
-
-||| All but the first element
-tail : Stream a -> Stream a
-tail (x::xs) = xs
+  map f (x::xs) = f x :: map f xs
 
 ||| Take precisely n elements from the stream
 ||| @ n how many elements to take
