@@ -11,6 +11,7 @@ modules = CFFI, CFFI.Types, CFFI.Memory,
           Control.Pipeline,
           Control.ST, Control.ST.ImplicitCall, Control.ST.Exception,
 
+          Interfaces.Correlatable,
           Interfaces.Verified,
           Interfaces.Zippable,
 
