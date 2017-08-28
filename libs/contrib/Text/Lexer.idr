@@ -180,8 +180,13 @@ takeToken lex str
 
 ||| Recognise a digit 0-9
 export
+digit : Lexer
+digit = pred isDigit
+
+||| Recognise one or more digits 0-9
+export
 digits : Lexer
-digits = some (Pred isDigit)
+digits = some digit
 
 ||| Recognise a whitespace character
 export
