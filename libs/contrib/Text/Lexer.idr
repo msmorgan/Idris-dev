@@ -188,6 +188,26 @@ export
 digits : Lexer
 digits = some digit
 
+||| Recognise an alpha character
+export
+alpha : Lexer
+alpha = pred isAlpha
+
+||| Recognise one or more alpha characters
+export
+alphas : Lexer
+alphas = some alpha
+
+||| Recognise an alphanumeric character
+export
+alphaNum : Lexer
+alphaNum = pred isAlphaNum
+
+||| Recognise one or more alphanumeric characters
+export
+alphaNums : Lexer
+alphaNums = some alphaNum
+
 ||| Recognise a whitespace character
 export
 space : Lexer
