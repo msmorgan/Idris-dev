@@ -48,6 +48,14 @@ export
 isNot : Char -> Lexer
 isNot x = Pred (/=x)
 
+||| Recognise a specific string
+export
+exact : String -> Lexer
+exact str with (unpack str)
+  exact str | [] = Fail -- Not allowed, Lexer has to consume
+  exact str | (x :: xs)
+      = foldl SeqEmpty (is x) (map is xs)
+
 ||| Recognise a lexer or recognise no input. This is not guaranteed
 ||| to consume input
 export
@@ -148,14 +156,6 @@ takeToken lex str
 export
 digits : Lexer
 digits = some (Pred isDigit)
-
-||| Recognise a specific string
-export
-exact : String -> Lexer
-exact str with (unpack str)
-  exact str | [] = Fail -- Not allowed, Lexer has to consume
-  exact str | (x :: xs)
-      = foldl SeqEmpty (is x) (map is xs)
 
 ||| Recognise a whitespace character
 export
