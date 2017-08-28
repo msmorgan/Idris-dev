@@ -178,17 +178,33 @@ takeToken lex str
     = do i <- scan lex 0 str -- i must be > 0 if successful
          pure (substr 0 i (getString str), strTail i str)
 
-||| Recognise a digit 0-9
+||| Recognise a character range [`a`-`b`]. Also works in reverse!
+export
+range : (start : Char) -> (end : Char) -> Lexer
+range start end = pred (\x => (x >= min start end)
+                           && (x <= max start end))
+
+||| Recognise a single digit 0-9
 export
 digit : Lexer
 digit = pred isDigit
 
-||| Recognise one or more digits 0-9
+||| Recognise one or more digits
 export
 digits : Lexer
 digits = some digit
 
-||| Recognise an alpha character
+||| Recognise a single hexidecimal digit
+export
+hexDigit : Lexer
+hexDigit = digit <|> range 'a' 'f' <|> range 'A' 'F'
+
+||| Recognise one or more hexidecimal digits
+export
+hexDigits : Lexer
+hexDigits = some hexDigit
+
+||| Recognise a single alpha character
 export
 alpha : Lexer
 alpha = pred isAlpha
@@ -281,6 +297,11 @@ charLit = is q <+> (escape '\\' any <|> isNot q) <+> is q
 export
 intLit : Lexer
 intLit = opt (is '-') <+> digits
+
+||| Recognise a hexidecimal literal, prefixed by "0x" or "0X"
+export
+hexLit : Lexer
+hexLit = approx "0x" <+> hexDigits
 
 ||| A mapping from lexers to the tokens they produce.
 ||| This is a list of pairs `(Lexer, String -> tokenType)`
