@@ -106,7 +106,7 @@ choice (x :: [])          = x
 choice (x :: xs@(_ :: _)) = x <|> choice xs
 
 ||| Recognise many instances of `l` until an instance of `end` is
-||| encountered.
+||| encountered. Not guaranteed to consume.
 |||
 ||| Useful for defining comments.
 export
@@ -178,88 +178,88 @@ takeToken lex str
     = do i <- scan lex 0 str -- i must be > 0 if successful
          pure (substr 0 i (getString str), strTail i str)
 
-||| Recognise a character range [`a`-`b`]. Also works in reverse!
+||| Recognise a character range /[`a`-`b`]/. Also works in reverse!
 export
 range : (start : Char) -> (end : Char) -> Lexer
 range start end = pred (\x => (x >= min start end)
                            && (x <= max start end))
 
-||| Recognise a single digit 0-9
+||| Recognise a single digit /[0-9]/
 export
 digit : Lexer
 digit = pred isDigit
 
-||| Recognise one or more digits
+||| Recognise one or more digits /[0-9]+/
 export
 digits : Lexer
 digits = some digit
 
-||| Recognise a single hexidecimal digit
+||| Recognise a single hexidecimal digit /[0-9a-fA-F]/
 export
 hexDigit : Lexer
 hexDigit = digit <|> range 'a' 'f' <|> range 'A' 'F'
 
-||| Recognise one or more hexidecimal digits
+||| Recognise one or more hexidecimal digits /[0-9a-fA-F]+/
 export
 hexDigits : Lexer
 hexDigits = some hexDigit
 
-||| Recognise a single alpha character
+||| Recognise a single alpha character /[a-zA-Z]/
 export
 alpha : Lexer
 alpha = pred isAlpha
 
-||| Recognise one or more alpha characters
+||| Recognise one or more alpha characters /[a-zA-Z]+/
 export
 alphas : Lexer
 alphas = some alpha
 
-||| Recognise a lowercase alpha character
+||| Recognise a lowercase alpha character /[a-z]/
 export
 lower : Lexer
 lower = pred isLower
 
-||| Recognise one or more lowercase alpha characters
+||| Recognise one or more lowercase alpha characters /[a-z]+/
 export
 lowers : Lexer
 lowers = some lower
 
-||| Recognise an uppercase alpha character
+||| Recognise an uppercase alpha character /[A-Z]/
 export
 upper : Lexer
 upper = pred isUpper
 
-||| Recognise one or more uppercase alpha characters
+||| Recognise one or more uppercase alpha characters /[A-Z]+/
 export
 uppers : Lexer
 uppers = some upper
 
-||| Recognise an alphanumeric character
+||| Recognise an alphanumeric character /[0-9a-zA-Z]/
 export
 alphaNum : Lexer
 alphaNum = pred isAlphaNum
 
-||| Recognise one or more alphanumeric characters
+||| Recognise one or more alphanumeric characters /[0-9a-zA-Z]+/
 export
 alphaNums : Lexer
 alphaNums = some alphaNum
 
-||| Recognise a single whitespace character
+||| Recognise a single whitespace character /\s/
 export
 space : Lexer
 space = pred isSpace
 
-||| Recognise one or more whitespace characters
+||| Recognise one or more whitespace characters /\s+/
 export
 spaces : Lexer
 spaces = some space
 
-||| Recognise a single non-whitespace, non-alphanumeric character
+||| Recognise a single non-whitespace, non-alphanumeric character /[^\s0-9a-zA-Z]/
 export
 symbol : Lexer
 symbol = pred (\x => not (isSpace x || isAlphaNum x))
 
-||| Recognise one or more non-whitespace, non-alphanumeric characters
+||| Recognise one or more non-whitespace, non-alphanumeric characters /[^\s0-9a-zA-Z]+/
 export
 symbols : Lexer
 symbols = some symbol
@@ -281,24 +281,24 @@ export
 escape : (esc : Char) -> Lexer -> Lexer
 escape esc l = is esc <+> l
 
-||| Recognise a string literal, including escaped characters.
+||| Recognise a string literal, including escaped characters. /"(\\.|[^"])*"/
 ||| (Note: doesn't yet handle escape sequences such as \123)
 export
 stringLit : {default '"' q : Char} ->Lexer
 stringLit = quote (is q) (escape '\\' any <|> any)
 
-||| Recognise a character literal, including escaped characters.
+||| Recognise a character literal, including escaped characters. /'(\\.|[^'])'/
 ||| (Note: doesn't yet handle escape sequences such as \123)
 export
 charLit : {default '\'' q : Char} Lexer
 charLit = is q <+> (escape '\\' any <|> isNot q) <+> is q
 
-||| Recognise an integer literal (possibly with a '-' prefix)
+||| Recognise an integer literal (possibly with a '-' prefix) /-?[0-9]+/
 export
 intLit : Lexer
 intLit = opt (is '-') <+> digits
 
-||| Recognise a hexidecimal literal, prefixed by "0x" or "0X"
+||| Recognise a hexidecimal literal, prefixed by "0x" or "0X" /0[xX][0-9a-fA-F]+/
 export
 hexLit : Lexer
 hexLit = approx "0x" <+> hexDigits
