@@ -395,6 +395,31 @@ export
 hexLit : Lexer
 hexLit = is '0' <+> oneOf "xX" <+> hexDigits
 
+||| Match /[Ee][+-]?\d+/
+exponent : Lexer
+exponent = like 'e' <+> opt (oneOf "+-") <+> digits
+
+||| Recognise a floating-point literal, including an optional exponent part.
+export
+doubleLit : {default (is '-') sign : Lexer} ->
+            {default exponent exp : Lexer} ->
+            Lexer
+doubleLit {sign} {exp}
+    = opt (is '-') <+> digits <+> opt (is '.' <+> digits) <+> opt exp
+
+||| Recognise `start`, then recognise all input until a newline is encountered,
+||| and consume the newline. Will succeed if end-of-input is encountered before
+||| a newline.
+lineComment : (start : Lexer) -> Lexer
+lineComment start = start <+> manyUntil newline any <+> opt newline
+
+||| Recognise all input between `start` and `end` lexers. Supports nesting.
+|||
+||| For block comments that don't support nesting (such as C-style comments),
+||| use `surround`.
+blockComment : (start : Lexer) -> (end : Lexer) -> Lexer
+blockComment start end = start <+> (blockComment start end <|> manyThen end any)
+
 ||| A mapping from lexers to the tokens they produce.
 ||| This is a list of pairs `(Lexer, String -> tokenType)`
 ||| For each Lexer in the list, if a substring in the input matches, run
