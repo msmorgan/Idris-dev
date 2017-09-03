@@ -109,6 +109,9 @@ manyThen stopAfter l = manyUntil stopAfter l <+> stopAfter
 export
 manyTill : (l : Lexer) -> (end : Lexer) -> Recognise False
 manyTill l end = end <|> opt (l <+> manyTill l end)
+%deprecate manyTill "Prefer `manyUntil` and `manyThen`. Argument order is flipped. \
+                    \For identical behavior, use the following equivalence. \
+                    \`manyTill l end = manyUntil end l <+> opt end`"
 
 ||| Recognise any character
 export
