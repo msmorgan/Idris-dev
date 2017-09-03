@@ -119,6 +119,20 @@ choice []                 = Empty
 choice (l :: [])          = l
 choice (l :: ls@(_ :: _)) = l <|> choice ls
 
+||| Repeat the sub-lexer `l` zero or more times until the lexer
+||| `stopBefore` is encountered. `stopBefore` will not be consumed.
+||| Not guaranteed to consume input.
+export
+manyUntil : (stopBefore : Recognise c) -> (l : Lexer) -> Recognise False
+manyUntil stopBefore l = many (reject stopBefore <+> l)
+
+||| Repeat the sub-lexer `l` zero or more times until the lexer
+||| `stopAfter` is encountered, and consume it. Guaranteed to
+||| consume if `stopAfter` consumes.
+export
+manyThen : (stopAfter : Recognise c) -> (l : Lexer) -> Recognise c
+manyThen stopAfter l = manyUntil stopAfter l <+> stopAfter
+
 ||| Recognise many instances of `l` until an instance of `end` is
 ||| encountered.
 |||
@@ -126,6 +140,9 @@ choice (l :: ls@(_ :: _)) = l <|> choice ls
 export
 manyTill : (l : Lexer) -> (end : Lexer) -> Recognise False
 manyTill l end = end <|> opt (l <+> manyTill l end)
+%deprecate manyTill "Prefer `manyUntil` and `manyThen`. Argument order is flipped. \
+                    \For identical behavior, use the following equivalence. \
+                    \`manyTill l end = manyUntil end l <+> opt end`"
 
 ||| Recognise a sub-lexer at least `min` times. Consumes input unless
 ||| min is zero.
@@ -329,7 +346,7 @@ symbols = some symbol
 ||| delimiting lexers
 export
 surround : (start : Lexer) -> (end : Lexer) -> (l : Lexer) -> Lexer
-surround start end l = start <+> manyTill l end
+surround start end l = start <+> manyThen end l
 
 ||| Recognise zero or more occurrences of a sub-lexer surrounded
 ||| by the same quote lexer on both sides (useful for strings)
