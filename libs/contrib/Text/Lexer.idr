@@ -354,28 +354,41 @@ export
 quote : (q : Lexer) -> (l : Lexer) -> Lexer
 quote q l = surround q q l
 
-||| Recognise an escape character (often '\\') followed by a sub-lexer
+||| Recognise an escape character (often `'\\'`) followed by a sub-lexer.
 export
-escape : (esc : Char) -> Lexer -> Lexer
-escape esc l = is esc <+> l
+escape : (c : Char) -> Lexer -> Lexer
+escape c l = is c <+> l
+
+||| Recognise an escaped sub-lexer
+||| @c The escape character
+export
+escaped : {default '\\' c : Char} -> Lexer -> Lexer
+escaped {c} l = escape c l
 
 ||| Recognise a string literal, including escaped characters.
-||| (Note: doesn't yet handle escape sequences such as \123)
+||| @q The quote character
+||| @c The escape character
+||| @esc Sub-lexer that can follow an escape character
 export
-stringLit : Lexer
-stringLit = quote (is '"') (escape '\\' any <|> any)
+stringLit : {default '"' q : Char} ->
+            {default '\\' c : Char} -> {default any esc : Lexer} -> Lexer
+stringLit {q} {c} {esc} = quote (is q) (escape c esc <|> any)
 
 ||| Recognise a character literal, including escaped characters.
-||| (Note: doesn't yet handle escape sequences such as \123)
+||| @q The quote character
+||| @c The escape character
+||| @esc Sub-lexer that can follow an escape character
 export
-charLit : Lexer
-charLit = let q = '\'' in
-              is q <+> (escape '\\' any <|> isNot q) <+> is q
+charLit : {default '\'' q : Char} ->
+          {default '\\' c : Char} -> {default any esc : Lexer} -> Lexer
+charLit {q} {c} {esc} = is q <+> (escape c esc <|> isNot q) <+> is q
 
-||| Recognise an integer literal (possibly with a '-' prefix)
+||| Recognise an integer literal preceded by an optional sign.
+||| @signs The valid single-character signs that can be used,
+|||        expressed as a string (internally uses `oneOf`)
 export
-intLit : Lexer
-intLit = opt (is '-') <+> digits
+intLit : {default "-" signs : String} -> Lexer
+intLit {signs} = opt (oneOf signs) <+> digits
 
 ||| Recognise a hexidecimal literal, prefixed by "0x" or "0X"
 export
