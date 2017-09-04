@@ -10,6 +10,7 @@ data Recognise : (consumes : Bool) -> Type where
      Empty : Recognise False
      Fail : Recognise c
      Expect : Recognise c -> Recognise False
+     Reject : Recognise c -> Recognise False
      Pred : (Char -> Bool) -> Recognise True
      SeqEat : Recognise True -> Inf (Recognise e) -> Recognise True
      SeqEmpty : Recognise e1 -> Recognise e2 -> Recognise (e1 || e2)
@@ -52,13 +53,7 @@ expect = Expect
 ||| Negative lookahead. Never consumes input.
 export
 reject : Recognise c -> Recognise False
-reject Empty            = Fail
-reject Fail             = Empty
-reject (Expect x)       = reject x
-reject (Pred f)         = Expect (Pred (not . f))
-reject (SeqEat r1 r2)   = reject r1 <|> Expect (SeqEat r1 (reject r2))
-reject (SeqEmpty r1 r2) = reject r1 <|> Expect (SeqEmpty r1 (reject r2))
-reject (Alt r1 r2)      = reject r1 <+> reject r2
+reject = Reject
 
 ||| Recognise a specific character
 export
@@ -152,6 +147,10 @@ scan (Expect r) idx str
     = case scan r idx str of
            Just _  => pure idx
            Nothing => Nothing
+scan (Reject r) idx str
+    = case scan r idx str of
+           Just _  => Nothing
+           Nothing => pure idx
 scan (Pred f) idx str
     = do c <- strIndex str idx
          if f c
