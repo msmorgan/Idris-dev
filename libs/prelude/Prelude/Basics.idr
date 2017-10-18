@@ -4,8 +4,9 @@ import Builtins
 
 %access public export
 
+||| Proof that a value of a type `ty` cannot exist
 Not : Type -> Type
-Not a = a -> Void
+Not ty = ty -> Void
 
 ||| Identity function.
 id : a -> a
@@ -58,4 +59,3 @@ data Dec : Type -> Type where
   ||| The case where the property holding would be a contradiction
   ||| @ contra a demonstration that prop would be a contradiction
   No  : (contra : prop -> Void) -> Dec prop
-

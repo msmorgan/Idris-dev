@@ -25,9 +25,9 @@ import Prelude.Uninhabited
 
 Uninhabited (Z = S n) where
   uninhabited Refl impossible
-  
+
 Uninhabited (S n = Z) where
-  uninhabited Refl impossible  
+  uninhabited Refl impossible
 
 --------------------------------------------------------------------------------
 -- Syntactic tests
@@ -85,13 +85,13 @@ toIntegerNat Z = 0
 toIntegerNat (S k) = 1 + toIntegerNat k
 
 ||| Subtract natural numbers. If the second number is larger than the first, return 0.
-total minus : Nat -> Nat -> Nat
+minus : Nat -> Nat -> Nat
 minus Z        right     = Z
 minus left     Z         = left
 minus (S left) (S right) = minus left right
 
 ||| Exponentiation of natural numbers
-total power : Nat -> Nat -> Nat
+power : Nat -> Nat -> Nat
 power base Z       = S Z
 power base (S exp) = mult base $ power base exp
 
@@ -102,6 +102,7 @@ hyper (S(S Z)) a Z      = Z
 hyper n        a Z      = S Z
 hyper (S pn)   a (S pb) = hyper pn a (hyper (S pn) a pb)
 
+hyper0Zeration : (a, b : Nat) -> hyper 3 a b = S b
 
 --------------------------------------------------------------------------------
 -- Comparisons

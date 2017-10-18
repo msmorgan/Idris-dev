@@ -174,18 +174,33 @@ natEnumFromThenTo n next m = if n == m then [n]
           modNatNZ n m nz = minus n $ mult m $ divNatNZ n m nz
 
 interface Enum a where
-  total pred : a -> a
-  total succ : a -> a
+  total
+  pred : a -> a
+
+  total
+  succ : a -> a
   succ e = fromNat (S (toNat e))
-  total toNat : a -> Nat
-  total fromNat : Nat -> a
-  total enumFrom : a -> Stream a
+
+  total
+  toNat : a -> Nat
+
+  total
+  fromNat : Nat -> a
+
+  total
+  enumFrom : a -> Stream a
   enumFrom n = n :: enumFrom (succ n)
-  total enumFromThen : a -> a -> Stream a
+
+  total
+  enumFromThen : a -> a -> Stream a
   enumFromThen x y = map fromNat (natEnumFromThen (toNat x) (toNat y))
-  total enumFromTo : a -> a -> List a
+
+  total
+  enumFromTo : a -> a -> List a
   enumFromTo x y = map fromNat (natEnumFromTo (toNat x) (toNat y))
-  total enumFromThenTo : a -> a -> a -> List a
+
+  total
+  enumFromThenTo : a -> a -> a -> List a
   enumFromThenTo x1 x2 y = map fromNat (natEnumFromThenTo (toNat x1) (toNat x2) (toNat y))
 
 Enum Nat where
