@@ -128,6 +128,14 @@ digit = pred isDigit
 digits : Lexer
 digits = some digit
 
+||| Recognise a single digit 1-9
+nonZeroDigit : Lexer
+nonZeroDigit = range '1' '9'
+
+||| Recognise one or more digits 1-9
+nonZeroDigits : Lexer
+nonZeroDigits = some nonZeroDigits
+
 ||| Recognise a single hexidecimal digit
 hexDigit : Lexer
 hexDigit = pred isHexDigit
