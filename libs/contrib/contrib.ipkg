@@ -54,6 +54,7 @@ modules = CFFI
         , System.Concurrency.Process
         , Text.Lexer
         , Text.Lexer.Core
+        , Text.Lexer.Horrible
         , Text.Literate
         , Text.Parser
         , Text.Parser.Core
