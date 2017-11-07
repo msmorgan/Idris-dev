@@ -1,5 +1,7 @@
 module Language.JSON.Data
 
+import Data.String.Extra
+
 %access private
 %default total
 
@@ -31,30 +33,66 @@ showChar c
 showString : String -> String
 showString x = "\"" ++ concatMap showChar (unpack x) ++ "\""
 
-mutual
-  stringifyArray : List JSON -> String
-  stringifyArray [] = ""
-  stringifyArray (x :: []) = stringify x
-  stringifyArray (x :: xs) = stringify x ++ "," ++ stringifyArray xs
 
-  stringifyProp : (String, JSON) -> String
-  stringifyProp (key, value) = show key ++ ":" ++ stringify value
+||| Convert a JSON value into its string representation.
+||| No whitespace is added.
+stringify : JSON -> String
+stringify JNull = "null"
+stringify (JBoolean x) = if x then "true" else "false"
+stringify (JNumber x) = show x
+stringify (JString x) = showString x
+stringify (JArray xs) = "[" ++ stringifyValues xs ++ "]"
+  where
+    stringifyValues : List JSON -> String
+    stringifyValues [] = ""
+    stringifyValues (x :: xs) = stringify x
+                             ++ if isNil xs
+                                   then ""
+                                   else "," ++ stringifyValues xs
+stringify (JObject xs) = "{" ++ stringifyProps xs ++ "}"
+  where
+    stringifyProp : (String, JSON) -> String
+    stringifyProp (key, value) = showString key ++ ":" ++ stringify value
 
-  stringifyObject : List (String, JSON) -> String
-  stringifyObject [] = ""
-  stringifyObject (x :: []) = stringifyProp x
-  stringifyObject (x :: xs) = stringifyProp x ++ "," ++ stringifyObject xs
-
-  ||| Convert a JSON into its string representation. No whitespace is added.
-  export
-  stringify : JSON -> String
-  stringify JNull = "null"
-  stringify (JBoolean x) = if x then "true" else "false"
-  stringify (JNumber x) = show x
-  stringify (JString x) = showString x
-  stringify (JArray xs) = "[" ++ stringifyArray xs ++ "]"
-  stringify (JObject xs) = "{" ++ stringifyObject xs ++ "}"
+    stringifyProps : List (String, JSON) -> String
+    stringifyProps [] = ""
+    stringifyProps (x :: xs) = stringifyProp x
+                            ++ if isNil xs
+                                  then ""
+                                  else "," ++ stringifyProps xs
 
 export
 Show JSON where
   show = stringify
+
+||| Format a JSON value, indenting by `n` spaces per nesting level.
+|||
+||| @curr The current indentation amount, measured in spaces.
+||| @n The amount of spaces to indent per nesting level.
+format : {default 0 curr : Nat} -> (n : Nat) -> JSON -> String
+format {curr} n json = indent curr $ formatValue curr n json
+  where
+    formatValue : (curr, n : Nat) -> JSON -> String
+    formatValue _ _ (JArray []) = "[]"
+    formatValue curr n (JArray xs@(_ :: _)) = "[\n" ++ formatValues xs
+                                           ++ indent curr "]"
+      where
+        formatValues : (xs : List JSON) -> {auto ok : NonEmpty xs} -> String
+        formatValues (x :: xs) = format {curr=(curr + n)} n x
+                              ++ case nonEmpty xs of
+                                      Yes ok => "\n," ++ formatValues xs
+                                      No _ => "\n"
+    formatValue _ _ (JObject []) = "{}"
+    formatValue curr n (JObject xs@(_ :: _)) = "{\n" ++ formatProps xs
+                                            ++ indent curr "}"
+      where
+        formatProp : (String, JSON) -> String
+        formatProp (key, value) = showString key ++ ": "
+                               ++ formatValue (curr + n) n value
+
+        formatProps : (xs : List (String, JSON)) -> {auto ok : NonEmpty xs} -> String
+        formatProps (x :: xs) = formatProp x
+                             ++ case nonEmpty xs of
+                                     Yes ok => ",\n" ++ formatProps xs
+                                     No _ => "\n"
+    formatValue _ _ x = stringify x
