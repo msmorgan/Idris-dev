@@ -47,6 +47,8 @@ modules = CFFI
         , Decidable.Order
         , Interfaces.Correlative
         , Interfaces.Verified
+        , Language.JSON
+        , Language.JSON.Data
         , Network.Cgi
         , Network.Socket
         , Network.Socket.Data
