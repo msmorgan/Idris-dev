@@ -3,7 +3,6 @@ module Language.JSON.Parser
 import Language.JSON.Data
 import Language.JSON.Tokens
 import Text.Parser
-import Text.Token
 
 %access private
 %default total

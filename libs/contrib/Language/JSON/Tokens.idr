@@ -1,8 +1,5 @@
 module Language.JSON.Tokens
 
-import Language.JSON.String
-import Text.Token
-
 %access public export
 %default total
 

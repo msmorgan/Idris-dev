@@ -3,7 +3,6 @@ module Language.JSON.Lexer
 import Language.JSON.String
 import Language.JSON.Tokens
 import Text.Lexer
-import Text.Token
 
 %access private
 %default total
