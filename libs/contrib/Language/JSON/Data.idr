@@ -1,5 +1,7 @@
 module Language.JSON.Data
 
+import Data.String.Extra
+
 %access private
 %default total
 
@@ -41,3 +43,41 @@ mutual
 export
 Show JSON where
   show = stringify
+
+mutual
+  formatArray : (n, curr : Nat) -> List JSON -> String
+  formatArray n curr [] = ""
+  formatArray n curr (x :: []) = format' n curr x ++ "\n"
+  formatArray n curr (x :: xs) = format' n curr x ++ ",\n"
+                              ++ formatArray n curr xs
+
+  formatObject : (n, curr : Nat) -> List (String, JSON) -> String
+  formatObject n curr [] = ""
+  formatObject n curr (x :: []) = formatProperty n curr x ++ "\n"
+  formatObject n curr (x :: xs) = formatProperty n curr x ++ ",\n"
+                               ++ formatObject n curr xs
+
+  formatProperty : (n, curr : Nat) -> (String, JSON) -> String
+  formatProperty n curr (key, value) = indent curr $
+    show key ++ ": " ++ formatValue n curr value
+
+  ||| Format without initial indentation.
+  formatValue : (n, curr : Nat) -> JSON -> String
+  formatValue n curr json
+    = case json of
+           JArray [] => "[]"
+           JArray xs => "[\n" ++ formatArray n (n + curr) xs
+                              ++ indent curr "]"
+           JObject [] => "{}"
+           JObject xs => "{\n" ++ formatObject n (n + curr) xs
+                               ++ indent curr "}"
+           x => stringify x
+
+  ||| Format with initial indentation.
+  format' : (n, curr : Nat) -> JSON -> String
+  format' n curr json = indent curr $ formatValue n curr json
+
+||| Format a JSON with a given amount of whitespace per indentation level.
+export
+format : Nat -> JSON -> String
+format n json = format' n 0 json
