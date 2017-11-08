@@ -16,6 +16,23 @@ data JSON
 
 %name JSON json
 
+showChar : Char -> String
+showChar c
+  = case c of
+         '\b' => "\\b"
+         '\f' => "\\f"
+         '\n' => "\\n"
+         '\r' => "\\r"
+         '\t' => "\\t"
+         '\\' => "\\\\"
+         '"'  => "\\\""
+         c => if isControl c || c >= '\127'
+                 then "\\u" ++ b16ToHexString (fromInteger (cast (ord c)))
+                 else singleton c
+
+showString : String -> String
+showString x = "\"" ++ concatMap showChar (unpack x) ++ "\""
+
 mutual
   stringifyArray : List JSON -> String
   stringifyArray [] = ""
@@ -36,7 +53,7 @@ mutual
   stringify JNull = "null"
   stringify (JBoolean x) = if x then "true" else "false"
   stringify (JNumber x) = show x
-  stringify (JString x) = show x
+  stringify (JString x) = showString x
   stringify (JArray xs) = "[" ++ stringifyArray xs ++ "]"
   stringify (JObject xs) = "{" ++ stringifyObject xs ++ "}"
 

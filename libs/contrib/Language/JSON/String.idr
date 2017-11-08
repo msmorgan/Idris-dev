@@ -49,10 +49,6 @@ unicodeEscape = esc $ is 'u' <+> count (exactly 4) hexDigit
 simpleEscape : Lexer
 simpleEscape = esc $ oneOf "\"\\/bfnrt"
 
-control : Lexer
-control = range '\x0000' '\x001f'
-      <|> range '\x007f' '\x009f'
-
 legalChar : Lexer
 legalChar = non (quo <|> is '\\' <|> control)
 
