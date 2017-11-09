@@ -4,9 +4,24 @@ import Data.Bool.Extra
 
 import public Text.Parser.Core
 import public Text.Quantity
+import public Text.Token
 
 %access export
 %default total
+
+||| Parse a terminal based on a kind of token, resulting in the recognised text.
+matchRaw : Eq k => k -> Grammar (Token k) True String
+matchRaw kind = terminal $
+  \(Tok kind' text) => if kind' == kind
+                          then Just text
+                          else Nothing
+
+||| Parse a terminal based on a kind of token, and convert the text recognised
+||| into a value. The kind acts as the discriminator for the conversion.
+match : (Eq k, Convert String k) =>
+        (kind : k) ->
+        Grammar (Token k) True (Target {from=String} kind)
+match kind = map (convert kind) (matchRaw kind)
 
 ||| Optionally parse a thing, with a default value if the grammar doesn't
 ||| match. May match the empty input.

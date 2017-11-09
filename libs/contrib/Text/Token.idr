@@ -1,6 +1,6 @@
 module Text.Token
 
-import Interfaces.Convert
+import public Interfaces.Convert
 
 %access public export
 %default total
