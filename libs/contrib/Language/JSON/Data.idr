@@ -34,6 +34,7 @@ showString x = "\"" ++ concatMap showChar (unpack x) ++ "\""
 
 ||| Convert a JSON value into its string representation.
 ||| No whitespace is added.
+export
 stringify : JSON -> String
 stringify JNull = "null"
 stringify (JBoolean x) = if x then "true" else "false"
@@ -49,15 +50,12 @@ stringify (JArray xs) = "[" ++ stringifyValues xs ++ "]"
                                    else "," ++ stringifyValues xs
 stringify (JObject xs) = "{" ++ stringifyProps xs ++ "}"
   where
-    stringifyProp : (String, JSON) -> String
-    stringifyProp (key, value) = showString key ++ ":" ++ stringify value
-
     stringifyProps : List (String, JSON) -> String
     stringifyProps [] = ""
-    stringifyProps (x :: xs) = stringifyProp x
-                            ++ if isNil xs
-                                  then ""
-                                  else "," ++ stringifyProps xs
+    stringifyProps ((k, v) :: xs) = showString k ++ ":" ++ stringify v
+                                 ++ if isNil xs
+                                       then ""
+                                       else "," ++ stringifyProps xs
 
 export
 Show JSON where
@@ -65,32 +63,41 @@ Show JSON where
 
 ||| Format a JSON value, indenting by `n` spaces per nesting level.
 |||
-||| @curr The current indentation amount, measured in spaces.
+||| @curr The current indentation level.
 ||| @n The amount of spaces to indent per nesting level.
+export
 format : {default 0 curr : Nat} -> (n : Nat) -> JSON -> String
-format {curr} n json = indent curr $ formatValue curr n json
+format {curr} n = formatValue
   where
-    formatValue : (curr, n : Nat) -> JSON -> String
-    formatValue _ _ (JArray []) = "[]"
-    formatValue curr n (JArray xs@(_ :: _)) = "[\n" ++ formatValues xs
-                                           ++ indent curr "]"
+    formatValue : JSON -> String
+    formatValue (JArray []) = "[]"
+    formatValue (JArray xs@(_ :: _)) = "[\n"
+                                    ++ formatValues xs
+                                    ++ indent curr "]"
       where
-        formatValues : (xs : List JSON) -> {auto ok : NonEmpty xs} -> String
-        formatValues (x :: xs) = format {curr=(curr + n)} n x
-                              ++ case nonEmpty xs of
-                                      Yes ok => "\n," ++ formatValues xs
-                                      No _ => "\n"
-    formatValue _ _ (JObject []) = "{}"
-    formatValue curr n (JObject xs@(_ :: _)) = "{\n" ++ formatProps xs
-                                            ++ indent curr "}"
-      where
-        formatProp : (String, JSON) -> String
-        formatProp (key, value) = showString key ++ ": "
-                               ++ formatValue (curr + n) n value
+        formatValues : (xs : List JSON) ->
+                       {auto ok : NonEmpty xs} ->
+                       String
+        formatValues (x :: xs)
+          = let curr' = n + curr in
+                indent curr' (format {curr=curr'} n x)
+             ++ case nonEmpty xs of
+                     Yes ok => ",\n" ++ formatValues xs
+                     No _ => "\n"
 
-        formatProps : (xs : List (String, JSON)) -> {auto ok : NonEmpty xs} -> String
-        formatProps (x :: xs) = formatProp x
-                             ++ case nonEmpty xs of
-                                     Yes ok => ",\n" ++ formatProps xs
-                                     No _ => "\n"
-    formatValue _ _ x = stringify x
+    formatValue (JObject []) = "{}"
+    formatValue (JObject xs@(_ :: _)) = "{\n"
+                                     ++ formatProps xs
+                                     ++ indent curr "}"
+      where
+        formatProps : (xs : List (String, JSON)) ->
+                      {auto ok : NonEmpty xs} ->
+                      String
+        formatProps ((k, v) :: xs)
+          = let curr' = n + curr in
+                indent curr' (showString k) ++ ": " ++ format {curr=curr'} n v
+             ++ case nonEmpty xs of
+                     Yes ok => ",\n" ++ formatProps xs
+                     No _ => "\n"
+
+    formatValue x = stringify x
