@@ -16,23 +16,21 @@ data JSON
 
 %name JSON json
 
-showChar : Char -> String
-showChar c
-  = case c of
-         '\b' => "\\b"
-         '\f' => "\\f"
-         '\n' => "\\n"
-         '\r' => "\\r"
-         '\t' => "\\t"
-         '\\' => "\\\\"
-         '"'  => "\\\""
-         c => if isControl c || c >= '\127'
-                 then "\\u" ++ b16ToHexString (fromInteger (cast (ord c)))
-                 else singleton c
-
 showString : String -> String
 showString x = "\"" ++ concatMap showChar (unpack x) ++ "\""
-
+  where
+    showChar : Char -> String
+    showChar '\b' = "\\b"
+    showChar '\f' = "\\f"
+    showChar '\n' = "\\n"
+    showChar '\r' = "\\r"
+    showChar '\t' = "\\t"
+    showChar '\\' = "\\\\"
+    showChar '"' = "\\\""
+    -- showChar '/' = "\\/"
+    showChar c = if isControl c -- || c > '\x007f'
+                    then "\\u" ++ b16ToHexString (fromInteger $ cast $ ord c)
+                    else singleton c
 
 ||| Convert a JSON value into its string representation.
 ||| No whitespace is added.
