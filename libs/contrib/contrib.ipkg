@@ -54,6 +54,7 @@ modules = CFFI
         , Decidable.Decidable
         , Decidable.Order
 
+        , Interfaces.Convert
         , Interfaces.Correlative
         , Interfaces.Verified
 
