@@ -18,10 +18,9 @@ matchRaw kind = terminal $
 
 ||| Parse a terminal based on a kind of token, and convert the text recognised
 ||| into a value. The kind acts as the discriminator for the conversion.
-match : (Eq k, Convert String k) =>
-        (kind : k) ->
-        Grammar (Token k) True (Target {from=String} kind)
-match kind = map (convert kind) (matchRaw kind)
+match : TokenKind k => (kind : k) ->
+        Grammar (Token k) True (TokType kind)
+match kind = map (tokValue kind) (matchRaw kind)
 
 ||| Optionally parse a thing, with a default value if the grammar doesn't
 ||| match. May match the empty input.

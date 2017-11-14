@@ -1,9 +1,36 @@
 module Text.Token
 
-import public Interfaces.Convert
+import Interfaces.Convert
 
 %access public export
 %default total
+
+||| For a type `kind`, specify a way of converting the recognised
+||| string into a value.
+|||
+||| ```idris example
+||| data SimpleKind = SKString | SKInt | SKComma
+|||
+||| TokenKind SimpleKind where
+|||   TokType SKString = String
+|||   TokType SKInt = Int
+|||   TokType SKComma = ()
+|||
+|||   tokValue SKString x = x
+|||   tokValue SKInt x = cast x
+|||   tokValue SKComma x = ()
+||| ```
+interface Eq k => TokenKind k where
+  ||| The type that a token of this kind converts to.
+  TokType : k -> Type
+
+  ||| Convert a recognised string into a value. The type is determined
+  ||| by the kind of token.
+  tokValue : (kind : k) -> String -> TokType kind
+
+(Eq k, Convert String k) => TokenKind k where
+  TokType = Target {from=String}
+  tokValue = convert
 
 ||| A token of a particular kind and the text that was recognised.
 record Token k where
@@ -13,5 +40,5 @@ record Token k where
 
 ||| Get the value of a `Token k`. The resulting type depends upon
 ||| the kind of token.
-value : Convert String k => (t : Token k) -> Target {from=String} (kind t)
-value (Tok k x) = convert k x
+value : TokenKind k => (t : Token k) -> TokType (kind t)
+value (Tok k x) = tokValue k x
