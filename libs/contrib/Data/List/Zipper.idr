@@ -3,8 +3,8 @@
 ||| https://hackage.haskell.org/package/ListZipper-1.2.0.2/docs/src/Data-List-Zipper.html
 module Data.List.Zipper
 
-%default total
 %access public export
+%default total
 
 ||| A Zipper for Lists
 data Zipper: Type -> Type where

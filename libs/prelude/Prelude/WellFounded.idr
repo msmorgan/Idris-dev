@@ -9,8 +9,8 @@ import Prelude.Nat
 import Prelude.List
 import Prelude.Uninhabited
 
-%default total
 %access public export
+%default total
 
 ||| Accessibility: some element `x` is accessible if all `y` such that
 ||| `rel y x` are themselves accessible.

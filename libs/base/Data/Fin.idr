@@ -1,7 +1,7 @@
 module Data.Fin
 
-%default total
 %access public export
+%default total
 
 ||| Numbers strictly less than some bound.  The name comes from "finite sets".
 |||

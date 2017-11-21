@@ -3,8 +3,8 @@ module Text.PrettyPrint.WL.Characters
 
 import Text.PrettyPrint.WL.Core
 
-%default total
 %access export
+%default total
 
 lparen : Doc
 lparen = char '('

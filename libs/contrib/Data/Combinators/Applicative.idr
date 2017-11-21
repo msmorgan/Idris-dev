@@ -4,8 +4,8 @@ module Data.Combinators.Applicative
 
 import Data.Combinators
 
-%default total
 %access public export
+%default total
 
 ||| Pure is just const, also known as the K combinator
 pure : a -> b -> a

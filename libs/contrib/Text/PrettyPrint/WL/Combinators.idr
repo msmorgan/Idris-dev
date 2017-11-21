@@ -4,8 +4,8 @@ module Text.PrettyPrint.WL.Combinators
 import Text.PrettyPrint.WL.Core
 import Text.PrettyPrint.WL.Characters
 
-%default total
 %access export
+%default total
 
 -- --------------------------------------------------- [ Alignment Combinators ]
 

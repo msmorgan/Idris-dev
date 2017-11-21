@@ -3,8 +3,8 @@ module Control.Isomorphism.Primitives
 import Control.Isomorphism
 import Data.ZZ
 
-%default total
 %access public export
+%default total
 
 -- This module contains isomorphisms between convenient inductive types and
 -- Idris primitives.  Because primitives lack a convenient structure, these

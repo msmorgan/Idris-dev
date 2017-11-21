@@ -1,8 +1,8 @@
 ||| Core definitions and primitives.
 module Text.PrettyPrint.WL.Core
 
-%default total
 %access export
+%default total
 
 -- -------------------------------------------------------------------- [ Core ]
 

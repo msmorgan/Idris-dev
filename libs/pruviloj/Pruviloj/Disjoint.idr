@@ -7,8 +7,8 @@ import Pruviloj.Core
 import Pruviloj.Internals
 import Pruviloj.Renamers
 
-%default total
 %access private
+%default total
 
 -------------------
 -- PRIVATE GUTS  --

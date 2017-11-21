@@ -3,8 +3,9 @@ module System
 import public Data.So
 
 %include C "unistd.h"
-%default partial
+
 %access public export
+%default partial
 
 ||| Retrieves a value from the environment if the given key is present,
 ||| otherwise it returns Nothing.

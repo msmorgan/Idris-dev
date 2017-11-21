@@ -3,8 +3,8 @@ module Data.ZZ
 import Decidable.Equality
 import Data.Sign
 
-%default total
 %access public export
+%default total
 
 ||| An integer is either a positive `Nat` or the negated successor of a `Nat`.
 |||

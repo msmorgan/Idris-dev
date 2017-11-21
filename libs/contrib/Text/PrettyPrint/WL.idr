@@ -14,5 +14,6 @@ import public Text.PrettyPrint.WL.Core
 import public Text.PrettyPrint.WL.Characters
 import public Text.PrettyPrint.WL.Combinators
 
-%default total
 %access export
+%default total
+

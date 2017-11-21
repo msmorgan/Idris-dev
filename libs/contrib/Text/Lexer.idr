@@ -5,8 +5,8 @@ import Data.Bool.Extra
 import public Text.Lexer.Core
 import public Text.Quantity
 
-%default total
 %access export
+%default total
 
 ||| Recognise any character
 any : Lexer

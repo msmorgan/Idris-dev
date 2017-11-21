@@ -4,8 +4,8 @@ import Syntax.PreorderReasoning
 import Data.Fin
 import Control.Category
 
-%default total
 %access public export
+%default total
 
 ||| An isomorphism between two types
 data Iso : Type -> Type -> Type where

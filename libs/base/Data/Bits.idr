@@ -2,9 +2,9 @@ module Data.Bits
 
 import Data.Fin
 
+%access export
 %default total -- This file is full of totality assertions though. Let's try
                -- to improve it! (EB)
-%access export
 
 ||| Finds the next exponent of a power of two.
 ||| For example `nextPow2 200 = 8`, because 2^8 = 256.

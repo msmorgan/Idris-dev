@@ -4,8 +4,8 @@ module Data.Matrix
 
 import public Data.Vect
 
-%default total
 %access public export
+%default total
 
 ||| Matrix with n rows and m columns
 Matrix : Nat -> Nat -> Type -> Type

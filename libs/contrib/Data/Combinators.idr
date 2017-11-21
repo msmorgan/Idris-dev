@@ -10,8 +10,8 @@
 
 module Data.Combinators
 
-%default total
 %access public export
+%default total
 
 ||| Psi combinator - psi bird (?) - Haskell on.
 on : (b -> b -> c) -> (a -> b) -> (a -> a -> c)

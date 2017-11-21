@@ -2,8 +2,8 @@ module Data.Fun
 
 import public Data.Vect
 
-%default total
 %access public export
+%default total
 
 ||| Build an n-ary function type from a Vect of Types and a result type
 Fun : Vect n Type -> Type -> Type

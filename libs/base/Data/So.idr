@@ -1,7 +1,7 @@
 module Data.So
 
-%default total
 %access public export
+%default total
 
 ||| Ensure that some run-time Boolean test has been performed.
 |||
