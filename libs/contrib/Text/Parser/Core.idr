@@ -88,7 +88,7 @@ Functor (Grammar tok c) where
 ||| from the first grammar to the value from the second grammar.
 ||| Guaranteed to consume if either grammar consumes.
 export
-(<*>) : Grammar tok c1 (a -> b) ->
+(<*>) : Grammar tok c1 (inf c1 (a -> b)) ->
         Grammar tok c2 a ->
         Grammar tok (c1 || c2) b
 (<*>) x y = SeqEmpty x (\f => map f y)

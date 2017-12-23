@@ -90,6 +90,7 @@ modules = CFFI
 
         , Text.Parser
         , Text.Parser.Core
+        , Text.Parser.State
 
         , Text.PrettyPrint.WL.Core
         , Text.PrettyPrint.WL.Combinators
